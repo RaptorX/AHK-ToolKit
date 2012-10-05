@@ -109,14 +109,14 @@ GroupAdd, ScreenTools, ahk_class AE_CApplication_9.0
 ;[Basic Script Info]{
 Clipboard := null
 global script := { base        : scriptobj
-                 ,name        : "AHK-ToolKit"
-                 ,version     : "0.8"
-                 ,author      : "RaptorX"
-                 ,email       : "graptorx@gmail.com"
-                 ,homepage    : "http://www.autohotkey.com/forum/topic61379.html#376087"
-                 ,crtdate     : "July 11, 2010"
-                 ,moddate     : "September 29, 2012"
-                 ,conf        : "conf.xml"}
+                  ,name        : "AHK-ToolKit"
+                  ,version     : "0.8"
+                  ,author      : "RaptorX"
+                  ,email       : "graptorx@gmail.com"
+                  ,homepage    : "http://www.autohotkey.com/forum/topic61379.html#376087"
+                  ,crtdate     : "July 11, 2010"
+                  ,moddate     : "September 29, 2012"
+                  ,conf        : "conf.xml"}
 script.getparams(), ForumMenu(), TrayMenu()  ; These function are here so that
                                              ; the Tray Icon is shown early
                                              ; and forum menus are ready.
@@ -313,20 +313,20 @@ return
 
 ; Special Labels
 OpenHelpFile:       ;{
-oldclip := ClipboardAll
-Send, {Ctrl Down}{left}+{right}c{CtrlUp}
-ClipWait
-htmlhelp(hwnd, regexreplace(a_ahkpath, "exe$", "chm"), clipboard)
-Clipboard := oldclip
+    oldclip := ClipboardAll
+    Send, {Ctrl Down}{left}+{right}c{CtrlUp}
+    ClipWait
+    htmlhelp(hwnd, regexreplace(a_ahkpath, "exe$", "chm"), clipboard)
+    Clipboard := oldclip
 return
 ;}
 
 ForumTags:          ;{
-oldclip := ClipboardAll
-Send, {Ctrl Down}{left}+{right}c{CtrlUp}
-ClipWait
-htmlhelp("ForumHelper", regexreplace(a_ahkpath, "exe$", "chm"), clipboard)
-Clipboard := oldclip
+    oldclip := ClipboardAll
+    Send, {Ctrl Down}{left}+{right}c{CtrlUp}
+    ClipWait
+    htmlhelp("ForumHelper", regexreplace(a_ahkpath, "exe$", "chm"), clipboard)
+    Clipboard := oldclip
 return
 ;}
 
