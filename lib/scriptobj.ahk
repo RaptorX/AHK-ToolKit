@@ -1,10 +1,55 @@
-﻿;[General Variables]{
+﻿/*
+ * =============================================================================================== *
+ * Author           : RaptorX   <graptorx@gmail.com>
+ * Script Name      : Script Object
+ * Script Version   : 1.0
+ * Homepage         : 
+ *
+ * Creation Date    : September 03, 2011
+ * Modification Date: October 05, 2012
+ *
+ * Description      :
+ * ------------------
+ * This is an object used to have a few common functions between scripts
+ * Those are functions related to script information 
+ *
+ * -----------------------------------------------------------------------------------------------
+ * License          :       Copyright ©2010-2012 RaptorX <GPLv3>
+ *
+ *          This program is free software: you can redistribute it and/or modify
+ *          it under the terms of the GNU General Public License as published by
+ *          the Free Software Foundation, either version 3 of  the  License,  or
+ *          (at your option) any later version.
+ *
+ *          This program is distributed in the hope that it will be useful,
+ *          but WITHOUT ANY WARRANTY; without even the implied warranty  of
+ *          MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE.  See  the
+ *          GNU General Public License for more details.
+ *
+ *          You should have received a copy of the GNU General Public License
+ *          along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>
+ * -----------------------------------------------------------------------------------------------
+ *                                          Script Object
+ * =============================================================================================== *
+ */
+ 
+;[General Variables]{
 ; Make SuperGlobal variables
-global null:="",sec:=1000,min:=60*sec,hour:=60*min
+global unused:=0, null:="",sec:=1000,min:=60*sec,hour:=60*min
 ;}
 
 class scriptobj
 {
+    name        := ""
+    version     := ""
+    author      := ""
+    email       := ""
+    homepage    := ""
+    crtdate     := ""
+    moddate     := ""
+    conf        := ""
+    debugging   := false
+    
     getparams(){
         global
         ; First we organize the parameters by priority [-sd, then -d , then everything else]
@@ -15,7 +60,7 @@ class scriptobj
 
         if (InStr(param, "-h") || InStr(param, "--help")
         ||  InStr(param, "-?") || InStr(param, "/?")){
-            debug ? debug("* ExitApp [0]", 2)
+            script.debug ? script.debug("* ExitApp [0]", 2)
             Msgbox, 0x40
                   , % "Accepted Parameters"
                   , % "The script accepts the following parameters:`n`n"
@@ -29,7 +74,7 @@ class scriptobj
             ExitApp
         }
         if (InStr(param, "-v") || InStr(param, "--version")){
-            debug ? debug("* ExitApp [0]", 2)
+            script.debug ? script.debug("* ExitApp [0]", 2)
             Msgbox, 0x40
                   , % "Version"
                   , % "Author: " script.author " <" script.email ">`n" "Version: " script.name " v" script.version "`t"
@@ -58,7 +103,7 @@ class scriptobj
         {
             if (sdebug && !debugfile && (!a_loopfield || !InStr(a_loopfield,".txt")
             || InStr(a_loopfield,"-"))){
-                debug ? debug("* Error, debug file name not specified. ExitApp [1]", 2)
+                script.debug ? script.debug("* Error, debug file name not specified. ExitApp [1]", 2)
                 Msgbox, 0x10
                       , % "Error"
                       , % "You must provide a name to a txt file to save the debug output.`n`n"
@@ -67,12 +112,12 @@ class scriptobj
             }
             else if (sdebug){
                 debugfile ? :debugfile := a_loopfield
-                debug ? debug("")
+                script.debug ? script.debug("")
             }
             if (a_loopfield = "-d"
             ||  a_loopfield = "--debug"){
                 debug := True, sdebug := False
-                debug ? debug("* " script.name " Debug ON`n* " script.name " [Start]`n* getparams() [Start]", 1)
+                script.debug ? script.debug("* " script.name " Debug ON`n* " script.name " [Start]`n* getparams() [Start]", 1)
             }
             if (a_loopfield = "-sd"
             ||  a_loopfield = "--save-debug"){
@@ -81,17 +126,17 @@ class scriptobj
             if (a_loopfield = "-sc"
             ||  a_loopfield = "--source-code"){
                 sc := True
-                debug ? debug("* Copying source code")
+                script.debug ? script.debug("* Copying source code")
                 FileSelectFile, instloc, S16, source_%a_scriptname%
                               , % "Save source file to..."
                               , % "AutoHotkey Script (*.ahk)"
                 if (!instloc){
-                    debug ? debug("* Canceled. ExitApp [1]", 2)
+                    script.debug ? script.debug("* Canceled. ExitApp [1]", 2)
                     ExitApp
                 }
                 FileInstall,AHK-ToolKit.ahk, %instloc%
                 if (!ErrorLevel){
-                    debug ? debug("* Source code successfully copied")
+                    script.debug ? script.debug("* Source code successfully copied")
                     MsgBox, 0x40
                           , % "Source code copied"
                           , % "The source code was successfully copied"
@@ -99,7 +144,7 @@ class scriptobj
                 }
                 else
                 {
-                    debug ? debug("* Error while copying the source code")
+                    script.debug ? script.debug("* Error while copying the source code")
                     Msgbox, 0x10
                           , % "Error while copying"
                           , % "There was an error while copying the source code.`nPlease check that "
@@ -109,9 +154,9 @@ class scriptobj
                 }
             }
         }
-        debug ? : debug("* " script.name " Debug OFF")
+        script.debug ? : script.debug("* " script.name " Debug OFF")
         if (sdebug && !debugfile){                      ; needed in case -sd is the only parameter given
-            debug ? debug("* Error, debug file name not specified. ExitApp [1]", 2)
+            script.debug ? script.debug("* Error, debug file name not specified. ExitApp [1]", 2)
             Msgbox, 0x10
                   , % "Error"
                   , % "You must provide a name to a txt file to save the debug output.`n`n"
@@ -119,16 +164,16 @@ class scriptobj
             ExitApp
         }
         if (sc = True){
-            debug ? debug("* ExitApp [0]", 2)
+            script.debug ? script.debug("* ExitApp [0]", 2)
             ExitApp
         }
-        debug ? debug("* getparams() [End]")
+        script.debug ? script.debug("* getparams() [End]")
         return
         }
     update(lversion, rfile="github", logurl="", vline=1){
-        global script, conf, debug
+        ; global script, conf, debug
 
-        debug ? debug("* update() [Start]", 1), node := conf.selectSingleNode("/AHK-Toolkit/@version")
+        script.debug ? script.debug("* update() [Start]", 1), node := conf.selectSingleNode("/" script.name "/@version")
         if  node.text != script.version
         {
             node.text := script.version
@@ -144,24 +189,24 @@ class scriptobj
         RunWait %ComSpec% /c "Ping -n 1 google.com" ,, Hide  ; Check if we are connected to the internet
         if connected := !ErrorLevel
         {
-            debug ? debug("* Downloading log file")
+            script.debug ? script.debug("* Downloading log file")
 
             if a_thismenuitem = Check for Updates
                 Progress, 90
 
             UrlDownloadToFile, %logurl%, %a_temp%\logurl
             FileReadLine, logurl, %a_temp%\logurl, %vline%
-            debug ? debug("* Version: " logurl)
+            script.debug ? script.debug("* Version: " logurl)
             RegexMatch(logurl, "v(.*)", Version)
             rfile := rfile = "github" ? ("https://www.github.com/"  
                                       . script.author "/" 
                                       . script.name "/zipball/" (a_iscompiled ? "latest-compiled" : "latest"))
                                       : rfile
-            debug ? debug("* Local Version: " lversion " Remote Version: " Version1)
+            script.debug ? script.debug("* Local Version: " lversion " Remote Version: " Version1)
             
             if (Version1 > lversion){
                 Progress, Off
-                debug ? debug("* There is a new update available")
+                script.debug ? script.debug("* There is a new update available")
                 Msgbox, 0x40044
                       , % "New Update Available"
                       , % "There is a new update available for this application.`n"
@@ -169,37 +214,37 @@ class scriptobj
                       , 10 ; 10s timeout
                 IfMsgbox, Timeout
                 {
-                    debug ? debug("* Update message timed out", 3)
+                    script.debug ? script.debug("* Update message timed out", 3)
                     return 1
                 }
                 IfMsgbox, No
                 {
-                    debug ? debug("* Update aborted by user", 3)
+                    script.debug ? script.debug("* Update aborted by user", 3)
                     return 2
                 }
-                debug ? debug("* Downloading file to: " a_temp "\ahk-tk.zip")
-                Download(rfile, a_temp "\ahk-tk.zip")
+                script.debug ? script.debug("* Downloading file to: " a_temp "/" script.name ".zip")
+                Download(rfile, a_temp "/" script.name ".zip")
                 oShell := ComObjCreate("Shell.Application")
-                oDir := oShell.NameSpace(a_temp), oZip := oShell.NameSpace(a_temp "\ahk-tk.zip")
-                oDir.CopyHere(oZip.Items), oShell := oDir := oZip := ""
+                oDir := oShell.NameSpace(a_temp), oZip := oShell.NameSpace(a_temp "/" script.name ".zip")
+                oDir.CopyHere(oZip.Items), oShell := oDir := oZip := null
                 
                 ; FileCopy instead of FileMove so that file permissions are inherited correctly.
-                Loop, % a_temp "\RaptorX*", 1
+                Loop, % a_temp "/" script.author "*", 1
                     FileCopyDir, %a_loopfilefullpath%, %a_scriptdir%, 1
                 
-                FileDelete, %a_temp%\ahk-tk.zip
-                FileDelete, %a_temp%\RaptorX*
+                FileDelete, % a_temp "/" script.name ".zip"
+                FileDelete, % a_temp "/" script.author "*"
                 
                 Msgbox, 0x40040
                       , % "Installation Complete"
-                      , % "The application will restart now."
+                      , % "The application will now restart."
                 
                 Reload
             }
             else if (a_thismenuitem = "Check for Updates")
             {
                 Progress, Off
-                debug ? (debug("* Script is up to date"), debug("* update() [End]", 2))
+                script.debug ? (script.debug("* Script is up to date"), script.debug("* update() [End]", 2))
                 Msgbox, 0x40040
                       , % "Script is up to date"
                       , % "You are using the latest version of this script.`n"
@@ -208,21 +253,21 @@ class scriptobj
 
                 IfMsgbox, Timeout
                 {
-                    debug ? debug("* Update message timed out", 3)
+                    script.debug ? script.debug("* Update message timed out", 3)
                     return 1
                 }
                 return 0
             }
             else
             {
-                debug ? (debug("* Script is up to date"), debug("* update() [End]", 2))
+                script.debug ? (script.debug("* Script is up to date"), script.debug("* update() [End]", 2))
                 return 0
             }
         }
         else
         {
             Progress, Off
-            debug ? (debug("* Connection Failed", 3), debug("* update() [End]", 2))
+            script.debug ? (script.debug("* Connection Failed", 3), script.debug("* update() [End]", 2))
             return 3
         }
     }
@@ -258,19 +303,17 @@ class scriptobj
         {
             RegWrite, REG_SZ, HKCU
                             , Software\Microsoft\Windows\CurrentVersion\Run
-                            , AutoHotkey Toolkit
+                            , % this.name
                             , %a_scriptfullpath%
         }
         else
         {
             RegDelete, HKCU
                      , Software\Microsoft\Windows\CurrentVersion\Run
-                     , AutoHotkey Toolkit
+                     , % this.name
         }
     }
-}
-
-debug(msg,delimiter = False){
+    debug(msg,delimiter = false){
     global debugfile, sdebug, script
     static ft := True   ; First time
 
@@ -291,6 +334,7 @@ debug(msg,delimiter = False){
         FileAppend, %msg%`n, %debugfile%
     }
 }
+}
 
 ; Based on code by Sean and SKAN @ http://www.autohotkey.com/forum/viewtopic.php?p=184468#184468
 Download(url, file)
@@ -308,7 +352,7 @@ Download(url, file)
     }
 
     DllCall("shlwapi\PathCompactPathEx", "str", _cu, "str", url, "uint", 50, "uint", 0)
-    Progress, Hide CWE0E0E0 CT000020 CB1111DD x%x% y%y% w330 h52 B1 FM8 FS8 WM700 WS700 ZH12 ZY3 C11,, %_cu%, AutoHotkeyProgress, Tahoma
+    Progress, Hide CWE0E0E0 CT000020 CB1111DD x%x% y%y% w330 h52 B1 FM8 FS8 WM700 WS700 ZH12 ZY3 C11,, %_cu%, % script.name, Tahoma
     
     if (0 = DllCall("urlmon\URLDownloadToCacheFile", "ptr", 0, "str", url, "str", tn, "uint", 260, "uint", 0x10, "ptr*", &vt))
         FileCopy %tn%, %file%
